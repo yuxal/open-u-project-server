@@ -6,12 +6,12 @@ const appVersion = packageJson.version;
 
 
 // Import controller routes
-const userRoutes = require('./controllers/user');
-const todoRoutes = require('./controllers/todo');
+const userRoutes = require('./controllers/userController');
+const todoRoutes = require('./controllers/todoController');
 
 // Use controller routes
 router.get('/', (req, res) => res.send('Welcome to the Todo API! Version: ' + appVersion));
-router.use('/user', userRoutes);
-router.use('/todo', todoRoutes);
+router.use('/api/user', userRoutes);
+router.use('/api/todo', todoRoutes);
 
 module.exports = router;

@@ -1,0 +1,17 @@
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pass VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    nickname VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE todos (
+     id INT AUTO_INCREMENT PRIMARY KEY,
+     title VARCHAR(255) NOT NULL,
+     description TEXT,
+     parent_task_id INT,
+     assignee INT,
+     status VARCHAR(255) NOT NULL,
+     start_date DATE,
+     due_date DATE
+ );
