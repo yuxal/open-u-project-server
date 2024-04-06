@@ -13,8 +13,7 @@
 		"cookie-parser": "1.4.4",
 		"dotenv": "8.1.0",
 		"express": "4.x",
-		"rainbow": "2.4.1",
-		"sequelize": "5.18.4"
+		"mysql": "^2.18.1"
 	},
 	"devDependencies": {
 		"nodemon": "1.19.2",

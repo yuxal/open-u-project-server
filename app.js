@@ -1,8 +1,7 @@
 var express = require('express');
-var rainbow = require('rainbow');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+const router = require('./router');
 
 
 var app = express();
@@ -15,9 +14,6 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.use(require('./middlewares/response'));
-
-// routes managed by rainbow
-app.use(rainbow());
+app.use(router);
 
 module.exports = app;

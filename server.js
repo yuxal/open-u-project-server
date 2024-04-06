@@ -2,7 +2,7 @@ require('dotenv').config();
 
 var app = require('./app');
 
-var port = process.env.PORT;
+var port = 5000;
 var startTime = new Date();
 
 app.listen(port, function() {
