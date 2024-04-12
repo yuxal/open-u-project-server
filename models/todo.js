@@ -14,11 +14,12 @@ class Todo {
         this.assignee = todo.assignee;
         this.status = todo.status;
         this.startDate = todo.startDate;
+        this.endDate = todo.endDate;
         this.dueDate = todo.dueDate;
     }
 
     toString() {
-        return `Todo: { title: ${this.title}, description: ${this.description}, parentTaskId: ${this.parentTaskId}, assignee: ${this.assignee}, status: ${this.status}, startDate: ${this.startDate}, dueDate: ${this.dueDate} }`;
+        return `Todo: { title: ${this.title}, description: ${this.description}, parentTaskId: ${this.parentTaskId}, assignee: ${this.assignee}, status: ${this.status}, startDate: ${this.startDate}, dueDate: ${this.dueDate}, endDate: ${this.endDate} }`;
     }
 }
 

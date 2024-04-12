@@ -12,9 +12,75 @@ router.post('/', protectedRoute, async(req, res) => {
 		title: req.body.title,
         status: req.body.status,
 		description: req.body.description,
-		assignee: req.session.user.id
+		assignee: req.body.assignee,
+		startDate: req.body.startDate,
+		dueDate: req.body.dueDate,
+		endDate: req.body.endDate,
+		parentTaskId: req.body.parentTaskId
 	})
     res.send(createdTodo)
+});
+
+router.put('/:todoId', protectedRoute, async(req, res) => {
+	// Update todo
+	if (!req.params.todoId) {
+		return res.status(400).json({ message: 'Id required for Todo' });
+	}
+	const updatedTodo = await todoService.updateTodo({
+		id: req.params.todoId,
+		title: req.body.title,
+		status: req.body.status,
+		description: req.body.description,
+		assignee: req.body.assignee,
+		startDate: req.body.startDate,
+		dueDate: req.body.dueDate,
+		endDate: req.body.endDate,
+		parentTaskId: req.body.parentTaskId
+	})
+	res.send(updatedTodo)
+});
+
+router.delete('/:todoId', protectedRoute, async(req, res) => {
+	// Delete todo
+	if (!req.params.todoId) {
+		return res.status(400).json({ message: 'Id required for Todo' });
+	}
+	await todoService.deleteTodo(req.params.todoId)
+	res.sendStatus(200)
+});
+
+router.put('/assign/:todoId', protectedRoute, async(req, res) => {
+	// Assign todo
+	if (!req.params.todoId) {
+		return res.status(400).json({ message: 'Id required for Todo' });
+	}
+	await todoService.assignTodo(req.params.todoId, req.body.assignee)
+	res.sendStatus(200)
+});
+
+router.get('/assignee/:assigneeId', protectedRoute, async(req, res) => {
+	if (!req.params.assigneeId) {
+		return res.status(400).json({ message: 'assigneeId required for get' });
+	}
+	const todos = await todoService.getTodoByAssignee(req.params.assigneeId)
+	res.send(todos);
+});
+
+router.get('/', protectedRoute, async(req, res) => {
+	const todos = await todoService.getAllTodos()
+	res.send(todos);
+});
+
+router.get('/due/:date', protectedRoute, async(req, res) => {
+	if (!req.params.date) {
+		return res.status(400).json({ message: 'assigneeId required for get' });
+	}
+	const todos = await todoService.getTodosForDate(req.params.date)
+	res.send(todos);
+});
+router.get('/overdue', protectedRoute, async(req, res) => {
+	const todos = await todoService.getOverdueTodos()
+	res.send(todos);
 });
 
 router.get('/:id', protectedRoute, async(req, res) => {

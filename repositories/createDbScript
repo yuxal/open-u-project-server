@@ -11,7 +11,8 @@ CREATE TABLE todos (
      description TEXT,
      parent_task_id INT,
      assignee INT,
-     status VARCHAR(255) NOT NULL,
+     status ENUM('option1', 'option2') NOT NULL,
      start_date DATE,
+     end_date DATE,
      due_date DATE
  );
