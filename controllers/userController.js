@@ -1,7 +1,8 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 const userService = require('../services/userService');
-const {protectedRoute} = require('../middleware/protectedRoute')
+const {protectedRoute, SUPER_SECRET_KEY} = require('../middleware/protectedRoute')
 
 router.post('/signup', async (req, res) => {
     if (!req.body.email || !req.body.password || !req.body.nickname) {
@@ -12,8 +13,8 @@ router.post('/signup', async (req, res) => {
     }
     const user = await userService.createUser(req.body.email, req.body.password, req.body.nickname);
     if (user) {
-        req.session.user = user;
-        return res.sendStatus(200);
+        const token = jwt.sign({userId: user.id}, SUPER_SECRET_KEY, {expiresIn: '1h'});
+        return res.send({token});
     }
     throw new Error('User not created');
 });
@@ -26,18 +27,13 @@ router.post('/login', async (req, res) => {
     if (!user || user.password !== req.body.password) {
         return res.status(400).json({ message: 'Invalid email or password' });
     }
-    req.session.user = user;
-    res.sendStatus(200);
+    const token = jwt.sign({userId: user.id}, SUPER_SECRET_KEY, {expiresIn: '1h'});
+    return res.send({token});
 });
 
-router.post('/logout', protectedRoute, async (req, res) => {
-    try {
-        await req.session.destroy()
-    } catch (e) {
-        console.error(e)
-        return res.sendStatus(500);
-    }
-    res.sendStatus(200);
+router.get('/assigns/:token', protectedRoute, async (req, res) => {
+    const assigns = await userService.getPossibleAssigns(req.userId);
+    res.send(assigns);
 });
 
 module.exports = router;

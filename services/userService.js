@@ -18,3 +18,12 @@ exports.createUser = async (email, password, nickname) => {
 		throw error;
 	}
 }
+
+exports.getPossibleAssigns = async (currentUserId) => {
+	try {
+		const users = await userRepository.getPossibleAssigns(currentUserId);
+		return users;
+	} catch (error) {
+		throw error;
+	}
+}

@@ -3,7 +3,7 @@ const router = express.Router();
 const todoService = require('../services/todoService');
 const {protectedRoute} = require('../middleware/protectedRoute')
 
-router.post('/', protectedRoute, async(req, res) => {
+router.post('/:token', protectedRoute, async(req, res) => {
 	// Create todo
 	if (!req.body.title) {
 		return res.status(400).json({ message: 'Title is required' });
@@ -21,7 +21,7 @@ router.post('/', protectedRoute, async(req, res) => {
     res.send(createdTodo)
 });
 
-router.put('/:todoId', protectedRoute, async(req, res) => {
+router.put('/:todoId/:token', protectedRoute, async(req, res) => {
 	// Update todo
 	if (!req.params.todoId) {
 		return res.status(400).json({ message: 'Id required for Todo' });
@@ -40,7 +40,7 @@ router.put('/:todoId', protectedRoute, async(req, res) => {
 	res.send(updatedTodo)
 });
 
-router.delete('/:todoId', protectedRoute, async(req, res) => {
+router.delete('/:todoId/:token', protectedRoute, async(req, res) => {
 	// Delete todo
 	if (!req.params.todoId) {
 		return res.status(400).json({ message: 'Id required for Todo' });
@@ -49,7 +49,7 @@ router.delete('/:todoId', protectedRoute, async(req, res) => {
 	res.sendStatus(200)
 });
 
-router.put('/assign/:todoId', protectedRoute, async(req, res) => {
+router.put('/assign/:todoId/:token', protectedRoute, async(req, res) => {
 	// Assign todo
 	if (!req.params.todoId) {
 		return res.status(400).json({ message: 'Id required for Todo' });
@@ -58,7 +58,7 @@ router.put('/assign/:todoId', protectedRoute, async(req, res) => {
 	res.sendStatus(200)
 });
 
-router.get('/assignee/:assigneeId', protectedRoute, async(req, res) => {
+router.get('/assignee/:assigneeId/:token', protectedRoute, async(req, res) => {
 	if (!req.params.assigneeId) {
 		return res.status(400).json({ message: 'assigneeId required for get' });
 	}
@@ -66,24 +66,24 @@ router.get('/assignee/:assigneeId', protectedRoute, async(req, res) => {
 	res.send(todos);
 });
 
-router.get('/', protectedRoute, async(req, res) => {
+router.get('/:token', protectedRoute, async(req, res) => {
 	const todos = await todoService.getAllTodos()
 	res.send(todos);
 });
 
-router.get('/due/:date', protectedRoute, async(req, res) => {
+router.get('/due/:date/:token', protectedRoute, async(req, res) => {
 	if (!req.params.date) {
 		return res.status(400).json({ message: 'assigneeId required for get' });
 	}
 	const todos = await todoService.getTodosForDate(req.params.date)
 	res.send(todos);
 });
-router.get('/overdue', protectedRoute, async(req, res) => {
+router.get('/overdue/:token', protectedRoute, async(req, res) => {
 	const todos = await todoService.getOverdueTodos()
 	res.send(todos);
 });
 
-router.get('/:id', protectedRoute, async(req, res) => {
+router.get('/:id/:token', protectedRoute, async(req, res) => {
 	const todo = await todoService.getTodoById(req.params.id);
 	if (todo) {
 		return res.json(todo);

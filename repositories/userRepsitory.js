@@ -26,7 +26,27 @@ async function getUserByEmail(email) {
     }
 }
 
+async function getPossibleAssigns() {
+    try {
+        const query = `SELECT id, nickname as name FROM users`;
+        const results = await repository.executeQuery(query);
+        if (results.length > 0) {
+            return results.map(user => {
+                return {
+                    id: user.id,
+                    name: user.name
+                }
+            });
+        }
+        return null;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
 module.exports = {
     createUser,
-    getUserByEmail
+    getUserByEmail,
+    getPossibleAssigns
 };

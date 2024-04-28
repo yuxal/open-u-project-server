@@ -9,13 +9,6 @@ const app = express();
 
 app.set('x-powered-by', false);
 
-app.use(cookieParser());
-app.use(session({
-	secret: 'somesuperdupersecretkey',
-	resave: false,
-	saveUninitialized: true
-}));
-
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
