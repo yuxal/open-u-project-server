@@ -5,6 +5,7 @@ const {protectedRoute} = require('../middleware/protectedRoute')
 
 router.post('/:token', protectedRoute, async(req, res) => {
 	// Create todo
+
 	if (!req.body.title) {
 		return res.status(400).json({ message: 'Title is required' });
 	}

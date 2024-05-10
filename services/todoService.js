@@ -2,29 +2,15 @@
 const todoRepository = require('../repositories/todoRepsitory')
 
 exports.createTodo = async (todo) => {
-    try {
-        const createdTodo = await todoRepository.createTodo(todo);
-        return createdTodo;
-    } catch (error) {
-        throw error;
-    }
+    return await todoRepository.createTodo(todo);
 }
 
 exports.updateTodo = async (todo) => {
-    try {
-        const updatedTodo = await todoRepository.updateTodo(todo);
-        return updatedTodo;
-    } catch (error) {
-        throw error;
-    }
+    return await todoRepository.updateTodo(todo);
 }
 
 exports.deleteTodo = async (todoId) => {
-    try {
-        await todoRepository.deleteTodo(todoId);
-    } catch (error) {
-        throw error;
-    }
+    await todoRepository.deleteTodo(todoId);
 }
 
 exports.assignTodo = async (todoId, assigneeId) => {
@@ -48,9 +34,5 @@ exports.getOverdueTodos = async () => {
 }
 
 exports.getTodoById = async (id) => {
-    try {
-        return await todoRepository.getTodoById(id);
-    } catch (error) {
-        throw error;
-    }
+    return await todoRepository.getTodoById(id);
 }

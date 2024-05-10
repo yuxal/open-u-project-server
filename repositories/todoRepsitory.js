@@ -1,12 +1,24 @@
 const repository = require('./db');
 const Todo = require('../models/todo');
+const moment = require('moment');
+
 
 async function createTodo(todo) {
-    try {
         const query =
             `INSERT INTO todos (title, description, parent_task_id, assignee, status, start_date, due_date, end_date) 
-            VALUES ("${todo.title}", ${todo.description || "NULL"}, ${todo.parentTaskId || "NULL"}, ${todo.assignee || "NULL"}, "${todo.status}", ${todo.startDate || "NULL"}, ${todo.dueDate || "NULL"}, ${todo.endDate || "NULL"})`;
-        const results = await repository.executeQuery(query);
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        const values = [
+            todo.title,
+            todo.description,
+            todo.parentTaskId,
+            todo.assignee,
+            todo.status,
+            todo.startDate ? parseDate(todo.startDate) : null,
+            todo.dueDate ? parseDate(todo.dueDate) : null,
+            todo.endDate ? parseDate(todo.endDate) : null
+        ];
+        const results = await repository.executeQuery(query, values);
         return new Todo({
             id: results.insertId,
             title: todo.title,
@@ -18,30 +30,37 @@ async function createTodo(todo) {
             endDate: todo.endDate,
             dueDate: todo.dueDate
         });
-    } catch (error) {
-        throw error;
-    }
 }
 
 async function updateTodo(todo) {
-    try {
-        const query =
-            `UPDATE todos
-            SET title = "${todo.title}",
-            description = ${todo.description || "NULL"},
-            parent_task_id = ${todo.parentTaskId || "NULL"},
-            assignee = ${todo.assignee || "NULL"},
-            status = "${todo.status}",
-            start_date = ${todo.startDate || "NULL"},
-            due_date = ${todo.dueDate || "NULL"},
-            end_date = ${todo.endDate || "NULL"}
-        WHERE id = ${todo.id};`;
-        await repository.executeQuery(query);
-        return todo;
-    } catch (error) {
-        throw error;
-    }
+    const query =
+        `UPDATE todos
+            SET title = ?,
+            description = ?,
+            parent_task_id = ?,
+            assignee = ?,
+            status = ?,
+            start_date = ?,
+            due_date = ?,
+            end_date = ?
+        WHERE id = ?`;
+
+    const values = [
+        todo.title,
+        todo.description,
+        todo.parentTaskId,
+        todo.assignee,
+        todo.status,
+        todo.startDate ? parseDate(todo.startDate) : null,
+        todo.dueDate ? parseDate(todo.dueDate) : null,
+        todo.endDate ? parseDate(todo.endDate) : null,
+        todo.id
+    ];
+
+    await repository.executeQuery(query, values);
+    return todo;
 }
+
 
 async function deleteTodo(todoId) {
     try {
@@ -146,6 +165,11 @@ async function getTodoById(id) {
         throw error;
     }
 }
+
+function parseDate(date) {
+    return date ? moment(date).format('YYYY-MM-DD HH:mm:ss') : null;
+}
+
 //get user by email
 module.exports = {
     createTodo,
