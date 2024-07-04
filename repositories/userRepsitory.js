@@ -5,7 +5,7 @@ async function createUser(email, password, nickname) {
     try {
         const query = `INSERT INTO users (email, pass, nickname) VALUES ("${email}", "${password}", "${nickname}")`;
         const results = await repository.executeQuery(query);
-        return new User(results.insertId, email, nickname, password);
+        return new User(results.insertId, email, nickname, password, false);
     } catch (error) {
         throw error;
     }
@@ -18,7 +18,7 @@ async function getUserByEmail(email) {
         const results = await repository.executeQuery(query);
         if (results.length > 0) {
             const user = results[0];
-            return new User(user.id, user.email, user.nickname, user.pass);
+            return new User(user.id, user.email, user.nickname, user.pass, user.is_admin === 1);
         }
         return null;
     } catch (error) {
@@ -26,9 +26,15 @@ async function getUserByEmail(email) {
     }
 }
 
-async function getPossibleAssigns() {
+async function getPossibleAssigns(isAdmin, userId) {
     try {
-        const query = `SELECT id, nickname as name FROM users`;
+        let query;
+        if (isAdmin) {
+            query = `SELECT id, nickname as name FROM users`;
+        } else {
+            query = `SELECT id, nickname as name FROM users WHERE id = ${userId}`;
+        }
+
         const results = await repository.executeQuery(query);
         if (results.length > 0) {
             return results.map(user => {
@@ -44,9 +50,22 @@ async function getPossibleAssigns() {
     }
 }
 
+async function isCurrentUserAdmin(currentUserId) {
+    try {
+        const query = `SELECT is_admin FROM users WHERE id = ${currentUserId}`;
+        const results = await repository.executeQuery(query);
+        if (results.length > 0) {
+            return results[0].is_admin === 1;
+        }
+        return false;
+    } catch (error) {
+        throw error;
+    }
+}
 
 module.exports = {
     createUser,
     getUserByEmail,
-    getPossibleAssigns
+    getPossibleAssigns,
+    isCurrentUserAdmin
 };

@@ -64,7 +64,7 @@ async function updateTodo(todo) {
 
 async function deleteTodo(todoId) {
     try {
-        const query = `DELETE FROM todos WHERE id = ${todoId}`
+        const query = `DELETE FROM todos WHERE id = ${todoId} OR parent_task_id = ${todoId}`
         await repository.executeQuery(query);
     } catch (error) {
         throw error;
@@ -87,8 +87,8 @@ async function getTodosByAssignee(assigneeId) {
     start_date AS startDate,
     end_date AS endDate,
     due_date AS dueDate
-FROM todos
-WHERE assignee = ${assigneeId}`;
+    FROM todos
+    WHERE assignee = ${assigneeId}`;
     return await repository.executeQuery(query);
 }
 

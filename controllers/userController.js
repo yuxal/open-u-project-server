@@ -14,7 +14,7 @@ router.post('/signup', async (req, res) => {
     const user = await userService.createUser(req.body.email, req.body.password, req.body.nickname);
     if (user) {
         const token = jwt.sign({userId: user.id}, SUPER_SECRET_KEY, {expiresIn: '1h'});
-        return res.send({token});
+        return res.send({token, isAdmin: user.isAdmin});
     }
     throw new Error('User not created');
 });
@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
         return res.status(400).json({ message: 'Invalid email or password' });
     }
     const token = jwt.sign({userId: user.id}, SUPER_SECRET_KEY, {expiresIn: '1h'});
-    return res.send({token});
+    return res.send({token, isAdmin: user.isAdmin});
 });
 
 router.get('/assigns/:token', protectedRoute, async (req, res) => {
