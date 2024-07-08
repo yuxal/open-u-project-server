@@ -2,7 +2,9 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const userService = require('../services/userService');
+const userRepository = require('../repositories/userRepsitory');
 const {protectedRoute, SUPER_SECRET_KEY} = require('../middleware/protectedRoute')
+const {verifyAdmin} = require('../middleware/verifyAdmin')
 
 router.post('/signup', async (req, res) => {
     if (!req.body.email || !req.body.password || !req.body.nickname) {
@@ -36,4 +38,20 @@ router.get('/assigns/:token', protectedRoute, async (req, res) => {
     res.send(assigns);
 });
 
+router.delete('/:userId', protectedRoute, verifyAdmin, async (req, res) => {
+    await userService.deleteUser(req.params.userId);
+    res.sendStatus(200);
+});
+
+router.post('/update', protectedRoute, async (req, res) => {
+    const isAdmin = await userRepository.isCurrentUserAdmin(req.userId)
+    if (!isAdmin && req.userId !== req.body.id) {
+        return res.status(401).json({ message: 'Only admin is allowed to update other users' });
+    }
+    if (!req.body.id || (!req.body.email && !req.body.password && !req.body.nickname)) {
+        return res.status(400).json({ message: `Id and at least one of email password or nickname is required to update user` });
+    }
+    await userService.updateUser(req.body);
+    res.sendStatus(200);
+});
 module.exports = router;

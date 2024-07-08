@@ -144,26 +144,27 @@ async function getAllTodos() {
 }
 
 async function getTodoById(id) {
-    try {
-        const query = `SELECT * FROM todos WHERE id = ${id}`;
-        const results = await repository.executeQuery(query);
-        if (results.length > 0) {
-            const todo = results[0];
-            return new Todo({
-                id: todo.id,
-                title: todo.title,
-                description: todo.description,
-                parentTaskId: todo.parent_task_id,
-                assignee: todo.assignee,
-                status: todo.status,
-                startDate: todo.start_date,
-                dueDate: todo.due_date
-            });
-        }
-        return null;
-    } catch (error) {
-        throw error;
+    const query = `SELECT * FROM todos WHERE id = ${id}`;
+    const results = await repository.executeQuery(query);
+    if (results.length > 0) {
+        const todo = results[0];
+        return new Todo({
+            id: todo.id,
+            title: todo.title,
+            description: todo.description,
+            parentTaskId: todo.parent_task_id,
+            assignee: todo.assignee,
+            status: todo.status,
+            startDate: todo.start_date,
+            dueDate: todo.due_date
+        });
     }
+    return null;
+}
+
+async function deleteTodosByAssignee(userId) {
+    const query = `DELETE FROM todos WHERE assignee = ${userId}`;
+    await repository.executeQuery(query);
 }
 
 function parseDate(date) {
@@ -180,5 +181,6 @@ module.exports = {
     getAllTodos,
     getTodosForDate,
     getOverdueTodos,
-    getTodoById
+    getTodoById,
+    deleteTodosByAssignee
 };
