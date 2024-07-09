@@ -38,12 +38,12 @@ router.get('/assigns/:token', protectedRoute, async (req, res) => {
     res.send(assigns);
 });
 
-router.delete('/:userId', protectedRoute, verifyAdmin, async (req, res) => {
+router.delete('/:userId/:token', protectedRoute, verifyAdmin, async (req, res) => {
     await userService.deleteUser(req.params.userId);
     res.sendStatus(200);
 });
 
-router.post('/update', protectedRoute, async (req, res) => {
+router.post('/update/:token', protectedRoute, async (req, res) => {
     const isAdmin = await userRepository.isCurrentUserAdmin(req.userId)
     if (!isAdmin && req.userId !== req.body.id) {
         return res.status(401).json({ message: 'Only admin is allowed to update other users' });
