@@ -1,6 +1,6 @@
 
 const userRepository = require('../repositories/userRepsitory');
-const todoRepository = require('../repositories/todoRepsitory');
+const todoService = require('../services/todoService');
 
 exports.getUserByEmail = async (email) => {
 	return userRepository.getUserByEmail(email);
@@ -17,7 +17,10 @@ exports.getPossibleAssigns = async (currentUserId) => {
 
 exports.deleteUser = async (userId) => {
 	await userRepository.deleteUser(userId);
-	return todoRepository.deleteTodosByAssignee(userId);
+	const todos = await todoService.getTodoByAssignee(userId);
+	for (const todo of todos) {
+		await todoService.deleteTodo(todo.id);
+	}
 }
 
 exports.updateUser = async (user) => {

@@ -5,8 +5,8 @@ const moment = require('moment');
 
 async function createTodo(todo) {
         const query =
-            `INSERT INTO todos (title, description, parent_task_id, assignee, status, start_date, due_date, end_date) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+            `INSERT INTO todos (title, description, parent_task_id, assignee, status, start_date, due_date, end_date, level) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         const values = [
             todo.title,
@@ -16,7 +16,8 @@ async function createTodo(todo) {
             todo.status,
             todo.startDate ? parseDate(todo.startDate) : null,
             todo.dueDate ? parseDate(todo.dueDate) : null,
-            todo.endDate ? parseDate(todo.endDate) : null
+            todo.endDate ? parseDate(todo.endDate) : null,
+            todo.level
         ];
         const results = await repository.executeQuery(query, values);
         return new Todo({
@@ -28,7 +29,8 @@ async function createTodo(todo) {
             status: todo.status,
             startDate: todo.startDate,
             endDate: todo.endDate,
-            dueDate: todo.dueDate
+            dueDate: todo.dueDate,
+            level: todo.level
         });
 }
 
@@ -42,7 +44,8 @@ async function updateTodo(todo) {
             status = ?,
             start_date = ?,
             due_date = ?,
-            end_date = ?
+            end_date = ?,
+            level = ?
         WHERE id = ?`;
 
     const values = [
@@ -54,6 +57,7 @@ async function updateTodo(todo) {
         todo.startDate ? parseDate(todo.startDate) : null,
         todo.dueDate ? parseDate(todo.dueDate) : null,
         todo.endDate ? parseDate(todo.endDate) : null,
+        todo.level,
         todo.id
     ];
 
@@ -63,12 +67,18 @@ async function updateTodo(todo) {
 
 
 async function deleteTodo(todoId) {
-    try {
-        const query = `DELETE FROM todos WHERE id = ${todoId} OR parent_task_id = ${todoId}`
-        await repository.executeQuery(query);
-    } catch (error) {
-        throw error;
-    }
+    const query = `DELETE FROM todos WHERE id = ${todoId}`
+    await repository.executeQuery(query);
+}
+
+async function getTodosByParentId(parentId) {
+    const query = `SELECT * FROM todos WHERE parent_task_id = ${parentId}`;
+    return await repository.executeQuery(query);
+
+}
+async function updateChildTodo(todoId, level) {
+    const query = `UPDATE todos SET parent_task_id = ${level === 0 ? null : 'parent_task_id'}, level = ${level} WHERE id = ${todoId}`;
+    await repository.executeQuery(query);
 }
 
 async function assignTodo(todoId, assigneeId) {
@@ -86,7 +96,8 @@ async function getTodosByAssignee(assigneeId) {
     status AS status,
     start_date AS startDate,
     end_date AS endDate,
-    due_date AS dueDate
+    due_date AS dueDate,
+    level AS level
     FROM todos
     WHERE assignee = ${assigneeId}`;
     return await repository.executeQuery(query);
@@ -104,7 +115,8 @@ async function getTodosForDate(date) {
     status AS status,
     start_date AS startDate,
     end_date AS endDate,
-    due_date AS dueDate
+    due_date AS dueDate,
+    level AS level
 FROM todos
 WHERE DATE(due_date) = "${formattedDate}"`;
     return await repository.executeQuery(query);
@@ -122,7 +134,8 @@ async function getOverdueTodos() {
     status AS status,
     start_date AS startDate,
     end_date AS endDate,
-    due_date AS dueDate
+    due_date AS dueDate,
+    level AS level
 FROM todos
 WHERE DATE(due_date) < "${formattedDate}"`;
     return await repository.executeQuery(query);
@@ -138,7 +151,8 @@ async function getAllTodos() {
     status AS status,
     start_date AS startDate,
     end_date AS endDate,
-    due_date AS dueDate
+    due_date AS dueDate,
+    level AS level
     FROM todos`;
     return await repository.executeQuery(query);
 }
@@ -156,7 +170,8 @@ async function getTodoById(id) {
             assignee: todo.assignee,
             status: todo.status,
             startDate: todo.start_date,
-            dueDate: todo.due_date
+            dueDate: todo.due_date,
+            level: todo.level
         });
     }
     return null;
@@ -182,5 +197,7 @@ module.exports = {
     getTodosForDate,
     getOverdueTodos,
     getTodoById,
-    deleteTodosByAssignee
+    deleteTodosByAssignee,
+    updateChildTodo,
+    getTodosByParentId
 };
