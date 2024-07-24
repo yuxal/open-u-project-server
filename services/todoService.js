@@ -48,12 +48,12 @@ exports.getAllTodos = async () => {
     return todoRepository.getAllTodos();
 }
 
-exports.getTodosForDate = async (date) => {
-    return todoRepository.getTodosForDate(date);
+exports.getTodosForDate = async (userId, date) => {
+    return todoRepository.getTodosForDate(userId, date);
 }
 
-exports.getOverdueTodos = async () => {
-    return todoRepository.getOverdueTodos();
+exports.getOverdueTodos = async (userId) => {
+    return todoRepository.getOverdueTodos(userId);
 }
 
 exports.getTodoById = async (id) => {

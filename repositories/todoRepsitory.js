@@ -103,7 +103,7 @@ async function getTodosByAssignee(assigneeId) {
     return await repository.executeQuery(query);
 }
 
-async function getTodosForDate(date) {
+async function getTodosForDate(userId, date) {
     const dateObject = new Date(date);
     const formattedDate = dateObject.toISOString().split('T')[0];
     const query = `SELECT
@@ -118,11 +118,11 @@ async function getTodosForDate(date) {
     due_date AS dueDate,
     level AS level
 FROM todos
-WHERE DATE(due_date) = "${formattedDate}"`;
+WHERE DATE(due_date) = "${formattedDate}" AND assignee = ${userId}`;
     return await repository.executeQuery(query);
 }
 
-async function getOverdueTodos() {
+async function getOverdueTodos(userId) {
     const dateObject = new Date();
     const formattedDate = dateObject.toISOString().split('T')[0];
     const query = `SELECT
@@ -137,7 +137,7 @@ async function getOverdueTodos() {
     due_date AS dueDate,
     level AS level
 FROM todos
-WHERE DATE(due_date) < "${formattedDate}"`;
+WHERE DATE(due_date) < "${formattedDate}" AND assignee = ${userId}`;
     return await repository.executeQuery(query);
 }
 

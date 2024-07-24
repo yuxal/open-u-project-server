@@ -76,11 +76,11 @@ router.get('/due/:date/:token', protectedRoute, async(req, res) => {
 	if (!req.params.date) {
 		return res.status(400).json({ message: 'assigneeId required for get' });
 	}
-	const todos = await todoService.getTodosForDate(req.params.date)
+	const todos = await todoService.getTodosForDate(req.userId, req.params.date)
 	res.send(todos);
 });
 router.get('/overdue/:token', protectedRoute, async(req, res) => {
-	const todos = await todoService.getOverdueTodos()
+	const todos = await todoService.getOverdueTodos(req.userId)
 	res.send(todos);
 });
 
